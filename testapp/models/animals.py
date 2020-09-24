@@ -41,65 +41,6 @@ class Animal(TypedModel, UniqueIdentifierMixin):
         return str(self.name)
 
 
-class Canine(Animal):
-    def say_something(self):
-        return "woof"
-
-
-class Feline(Animal):
-    def say_something(self):
-        return "meoww"
-
-    mice_eaten = models.IntegerField(default=0)
-
-
-class BigCat(Feline):
-    """
-    This model tests doubly-proxied models.
-    """
-
-    def say_something(self):
-        return "roar"
-
-
-class AngryBigCat(BigCat):
-    """
-    This model tests triple-proxied models. Because we can
-    """
-
-    canines_eaten = models.ManyToManyField(Canine)
-
-    def say_something(self):
-        return "raawr"
-
-
-class Parrot(Animal):
-    known_words = models.IntegerField(null=True)
-
-    def say_something(self):
-        return "hello"
-
-
-class AbstractVegetable(TypedModel):
-    """
-    This is an entirely different typed model.
-    """
-
-    name = models.CharField(max_length=255)
-    color = models.CharField(max_length=255)
-    yumness = models.FloatField(null=False)
-
-    mymanager = models.Manager()
-
-
-class Fruit(AbstractVegetable):
-    pass
-
-
-class Vegetable(AbstractVegetable):
-    pass
-
-
 class Parent(TypedModel):
     a = models.CharField(max_length=1)
 

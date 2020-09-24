@@ -9,6 +9,6 @@ install:
   - "pip install $PIP_DJANGO pyyaml coveralls pytest-django"
   - "pip install -e ."
 script:
-  coverage run $VIRTUAL_ENV/bin/py.test --ds=test_settings typedmodels/tests.py
+  coverage run $VIRTUAL_ENV/bin/py.test --ds=testapp.settings typedmodels/tests.py
 after_success:
   coveralls

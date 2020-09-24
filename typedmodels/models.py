@@ -142,7 +142,7 @@ class TypedModelMetaclass(ModelBase):
             opts = cls._meta
 
             model_name = opts.model_name
-            typ = "%s.%s" % (opts.app_label, model_name)
+            typ = f"{opts.app_label}.{model_name}"
             cls._typedmodels_type = typ
             cls._typedmodels_subtypes = [typ]
             if typ in base_class._typedmodels_registry:
@@ -179,7 +179,6 @@ class TypedModelMetaclass(ModelBase):
             cls._meta._typedmodels_original_many_to_many = cls._meta.many_to_many
 
             # add a get_type_classes classmethod to allow fetching of all the subclasses (useful for admin)
-
             def get_type_classes(subcls):
                 if subcls is cls:
                     return list(cls._typedmodels_registry.values())
@@ -188,7 +187,6 @@ class TypedModelMetaclass(ModelBase):
                         cls._typedmodels_registry[k]
                         for k in subcls._typedmodels_subtypes
                     ]
-
             cls.get_type_classes = classmethod(get_type_classes)
 
             def get_types(subcls):
@@ -196,7 +194,6 @@ class TypedModelMetaclass(ModelBase):
                     return list(cls._typedmodels_registry.keys())
                 else:
                     return subcls._typedmodels_subtypes[:]
-
             cls.get_types = classmethod(get_types)
 
         return cls
@@ -322,7 +319,7 @@ class TypedModel(models.Model, metaclass=TypedModelMetaclass):
         args = list(args)
         if len(args) > len(self._meta.fields):
             # Daft, but matches old exception sans the err msg.
-            raise IndexError("Number of args exceeds number of fields")
+            raise IndexError('Number of args exceeds number of fields')
         for field_value, field in zip(args, self._meta.fields):
             kwargs[field.attname] = field_value
         args = []  # args were all converted to kwargs
@@ -343,7 +340,7 @@ class TypedModel(models.Model, metaclass=TypedModelMetaclass):
             if issubclass(base, TypedModel) and hasattr(base, '_typedmodels_registry'):
                 break
         else:
-            raise ValueError("No suitable base class found to recast!")
+            raise ValueError('No suitable base class found to recast!')
 
         if not self.type:
             if not hasattr(self, '_typedmodels_type'):
@@ -362,12 +359,12 @@ class TypedModel(models.Model, metaclass=TypedModelMetaclass):
         else:
             if isinstance(typ, type) and issubclass(typ, base):
                 model_name = typ._meta.model_name
-                typ = '%s.%s' % (typ._meta.app_label, model_name)
+                typ = f'{typ._meta.app_label}.{model_name}'
 
         try:
             correct_cls = base._typedmodels_registry[typ]
         except KeyError:
-            raise ValueError("Invalid %s identifier: %r" % (base.__name__, typ))
+            raise ValueError(f'Invalid {base.__name__} identifier: {typ}')
 
         self.type = typ
 
@@ -378,7 +375,7 @@ class TypedModel(models.Model, metaclass=TypedModelMetaclass):
 
     def save(self, *args, **kwargs):
         if not getattr(self, '_typedmodels_type', None):
-            raise RuntimeError("Untyped %s cannot be saved." % self.__class__.__name__)
+            raise RuntimeError(f'Untyped {self.__class__.__name__} cannot be saved.')
         return super(TypedModel, self).save(*args, **kwargs)
 
     def _get_unique_checks(self, exclude=None):
@@ -406,9 +403,9 @@ _python_serializer_get_dump_object = _PythonSerializer.get_dump_object
 def _get_dump_object(self, obj):
     if isinstance(obj, TypedModel):
         return {
-            "pk": smart_str(obj._get_pk_val(), strings_only=True),
-            "model": smart_str(getattr(obj, 'base_class', obj)._meta),
-            "fields": self._current,
+            'pk': smart_str(obj._get_pk_val(), strings_only=True),
+            'model': smart_str(getattr(obj, 'base_class', obj)._meta),
+            'fields': self._current,
         }
     else:
         return _python_serializer_get_dump_object(self, obj)
@@ -426,15 +423,15 @@ def _start_object(self, obj):
         modelname = smart_str(getattr(obj, 'base_class', obj)._meta)
         if obj_pk is None:
             attrs = {
-                "model": modelname,
+                'model': modelname,
             }
         else:
             attrs = {
-                "pk": smart_str(obj._get_pk_val()),
-                "model": modelname,
+                'pk': smart_str(obj._get_pk_val()),
+                'model': modelname,
             }
 
-        self.xml.startElement("object", attrs)
+        self.xml.startElement('object', attrs)
     else:
         return _xml_serializer_start_object(self, obj)
 
